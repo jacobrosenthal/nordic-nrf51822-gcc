@@ -1,10 +1,10 @@
 {
-  "name": "nordic-nrf51822-gcc",
+  "name": "nordic-nrf51822-gcc-unofficial",
   "version": "1.0.0",
-  "description": "Official mbed build target for the mbed nrf51822 development board, using the armgcc toolchain.",
-  "homepage": "https://github.com/ARMmbed/target-nordic-nrf51822",
+  "description": "UNOfficial mbed build target for the mbed nrf51822 development board, using the armgcc toolchain. Nordic globs multiple targets in a repo which means you can't target and override them.",
+  "homepage": "https://github.com/jacobrosenthal/nordic-nrf51822-gcc",
   "repository": {
-    "url": "git@github.com:ARMmbed/target-nordic-nrf51822.git",
+    "url": "git@github.com:jacobrosenthal/nordic-nrf51822-gcc.git",
     "type": "git"
   },
   "licenses": [
