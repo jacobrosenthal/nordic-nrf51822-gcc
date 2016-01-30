@@ -69,6 +69,8 @@ if(YOTTA_CFG_NORDIC_SOFTDEVICE STREQUAL "S110")
 elseif(YOTTA_CFG_NORDIC_SOFTDEVICE STREQUAL "S130")
     set(NRF51822_LINKER_FLAGS_FILE_PATH  "${CMAKE_CURRENT_LIST_DIR}/../ld/NRF51822_${YOTTA_CFG_NRF51822_RAM_SIZE}_S130.ld")
     set(NRF51822_SOFTDEVICE_FILE_PATH    "${CMAKE_CURRENT_LIST_DIR}/../softdevice/s130_nrf51_1.0.0_softdevice.hex")
+elseif(YOTTA_CFG_NORDIC_SOFTDEVICE STREQUAL "NONE")
+    set(NRF51822_LINKER_FLAGS_FILE_PATH  "${CMAKE_CURRENT_LIST_DIR}/../ld/NRF51822_${YOTTA_CFG_NRF51822_RAM_SIZE}_NONE.ld")
 else()
     message(FATAL_ERROR "SoftDevice version '${YOTTA_CFG_NORDIC_SOFTDEVICE}' is not recognized. Please check your yotta config file.")
 endif()
@@ -93,28 +95,30 @@ set(NRF51822_MEMORY_INFO_SCRIPT  "${CMAKE_CURRENT_LIST_DIR}/../scripts/memory_in
 # pre-built softdevice:
 function(yotta_apply_target_rules target_type target_name)
     if(${target_type} STREQUAL "EXECUTABLE")
-        if(YOTTA_CFG_IMAGE_FOTA)
-            add_custom_command(TARGET ${target_name}
-                POST_BUILD
-                # objcopy to hex
-                COMMAND arm-none-eabi-objcopy -O ihex ${target_name} ${target_name}.hex
-                # and append the softdevice hex file
-                COMMAND python ${NRF51822_MERGE_HEX_SCRIPT} ${NRF51822_SOFTDEVICE_HEX_FILE} ${target_name}.hex ${target_name}-combined.hex
-                # append the softdevice and bootloader hex file
-                COMMAND python ${NRF51822_MERGE_HEX_SCRIPT} ${target_name}-combined.hex ${NRF51822_BOOTLOADER_HEX_FILE} ${target_name}-combined-fota.hex
-                COMMENT "hexifying and adding softdevice and bootloader to ${target_name}"
-                VERBATIM
-            )
-        else()
-            add_custom_command(TARGET ${target_name}
-                POST_BUILD
-                # objcopy to hex
-                COMMAND arm-none-eabi-objcopy -O ihex ${target_name} ${target_name}.hex
-                # and append the softdevice hex file
-                COMMAND python ${NRF51822_MERGE_HEX_SCRIPT} ${NRF51822_SOFTDEVICE_HEX_FILE} ${target_name}.hex ${target_name}-combined.hex
-                COMMENT "hexifying and adding softdevice to ${target_name}"
-                VERBATIM
-            )
+        if(NRF51822_SOFTDEVICE_HEX_FILE)
+            if(YOTTA_CFG_IMAGE_FOTA)
+                add_custom_command(TARGET ${target_name}
+                    POST_BUILD
+                    # objcopy to hex
+                    COMMAND arm-none-eabi-objcopy -O ihex ${target_name} ${target_name}.hex
+                    # and append the softdevice hex file
+                    COMMAND python ${NRF51822_MERGE_HEX_SCRIPT} ${NRF51822_SOFTDEVICE_HEX_FILE} ${target_name}.hex ${target_name}-combined.hex
+                    # append the softdevice and bootloader hex file
+                    COMMAND python ${NRF51822_MERGE_HEX_SCRIPT} ${target_name}-combined.hex ${NRF51822_BOOTLOADER_HEX_FILE} ${target_name}-combined-fota.hex
+                    COMMENT "hexifying and adding softdevice and bootloader to ${target_name}"
+                    VERBATIM
+                )
+            else()
+                add_custom_command(TARGET ${target_name}
+                    POST_BUILD
+                    # objcopy to hex
+                    COMMAND arm-none-eabi-objcopy -O ihex ${target_name} ${target_name}.hex
+                    # and append the softdevice hex file
+                    COMMAND python ${NRF51822_MERGE_HEX_SCRIPT} ${NRF51822_SOFTDEVICE_HEX_FILE} ${target_name}.hex ${target_name}-combined.hex
+                    COMMENT "hexifying and adding softdevice to ${target_name}"
+                    VERBATIM
+                )
+            endif()
         endif()
         add_custom_command(TARGET ${target_name}
             POST_BUILD
