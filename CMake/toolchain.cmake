@@ -101,6 +101,14 @@ set(NRF51822_MERGE_HEX_SCRIPT    "${CMAKE_CURRENT_LIST_DIR}/../scripts/merge_hex
 set(NRF51822_MEMORY_INFO_SCRIPT  "${CMAKE_CURRENT_LIST_DIR}/../scripts/memory_info.py")
 set(NRF51822_GEN_DAT_SCRIPT      "${CMAKE_CURRENT_LIST_DIR}/../scripts/generate_dat.py")
 
+set(UICR_DEVICE_TYPE_ADDRESS_START 0x10001080)
+set(UICR_DEVICE_TYPE_ADDRESS_END 0x10001082)
+
+set(UICR_DEVICE_VERSION_ADDRESS_START 0x10001082)
+set(UICR_DEVICE_VERSION_ADDRESS_END 0x10001084)
+
+set(SREC_FLAGS -exclude 0x7F000 0x7F020 -generate ${UICR_DEVICE_TYPE_ADDRESS_START} ${UICR_DEVICE_TYPE_ADDRESS_END} -CONSTant_Little_Endian ${YOTTA_CFG_UICR_DEVICE_TYPE} 4 -generate ${UICR_DEVICE_VERSION_ADDRESS_START} ${UICR_DEVICE_VERSION_ADDRESS_END} -CONSTant_Little_Endian ${YOTTA_CFG_UICR_DEVICE_VERSION} 4 -generate 0x7F000 0x7F004 -CONSTant_Little_Endian 0x01 4 -generate 0x7F004 0x7F008 -CONSTant_Little_Endian 0x00 4 -generate 0x7F008 0x7F00C -CONSTant_Little_Endian 0xFE 4 -generate 0x7F00C 0x7F020 -constant 0x00)
+
 # define a function for yotta to apply target-specific rules to build products,
 # in our case we need to convert the built elf file to .hex, and add the
 # pre-built softdevice:
@@ -116,10 +124,10 @@ function(yotta_apply_target_rules target_type target_name)
                 # generate dfu .dat from bin
                 COMMAND python ${NRF51822_GEN_DAT_SCRIPT} ${target_name}.bin --sd-req ${SOFTDEVICE_VERSION} --dev-type ${YOTTA_CFG_UICR_DEVICE_TYPE} --dev-revision ${YOTTA_CFG_UICR_DEVICE_VERSION}
                 COMMENT "generating .dat and .zip"
-                # and append the softdevice hex file
-                COMMAND python ${NRF51822_MERGE_HEX_SCRIPT} ${NRF51822_SOFTDEVICE_HEX_FILE} ${target_name}.hex ${target_name}-combined.hex
+                # and append the softdevice hex file and set UICR data
+                COMMAND srec_cat ${NRF51822_SOFTDEVICE_HEX_FILE} -intel ${target_name}.hex -intel ${SREC_FLAGS} -o ${target_name}-combined.hex -intel
                 # append the softdevice and bootloader hex file
-                COMMAND python ${NRF51822_MERGE_HEX_SCRIPT} ${target_name}-combined.hex ${NRF51822_BOOTLOADER_HEX_FILE} ${target_name}-combined-fota.hex
+                COMMAND srec_cat ${target_name}-combined.hex -intel ${NRF51822_BOOTLOADER_HEX_FILE} -intel -o ${target_name}-combined-fota.hex -intel
                 COMMENT "hexifying and adding softdevice and bootloader to ${target_name}"
                 VERBATIM
             )
