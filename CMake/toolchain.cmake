@@ -126,6 +126,9 @@ set(SREC_FLAGS ${SREC_FLAGS} -generate ${UICR_DEVICE_VERSION_ADDRESS_START} ${UI
 # uicr serial number
 set(SREC_FLAGS ${SREC_FLAGS} -generate ${YOTTA_CFG_UICR_SERIAL_START} ${YOTTA_CFG_UICR_SERIAL_END} -CONSTant_Little_Endian ${YOTTA_CFG_UICR_SERIAL} 4)
 
+# bootloader
+set(SREC_FLAGS ${SREC_FLAGS} -exclude 0x3FC00 0x3FC20 -generate 0x3FC00 0x3FC04 -l-e-constant 0x01 4 -generate 0x3FC04 0x3FC08 -l-e-constant 0x00 4 -generate 0x3FC08 0x3FC0C -l-e-constant 0xFE 4 -generate 0x3FC0C 0x3FC20 -constant 0x00)
+
 # define a function for yotta to apply target-specific rules to build products,
 # in our case we need to convert the built elf file to .hex, and add the
 # pre-built softdevice:
