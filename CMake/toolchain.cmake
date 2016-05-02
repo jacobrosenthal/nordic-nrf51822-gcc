@@ -107,7 +107,16 @@ set(UICR_DEVICE_TYPE_ADDRESS_END 0x10001082)
 set(UICR_DEVICE_VERSION_ADDRESS_START 0x10001082)
 set(UICR_DEVICE_VERSION_ADDRESS_END 0x10001084)
 
-set(SREC_FLAGS -exclude 0x7F000 0x7F020 -generate ${UICR_DEVICE_TYPE_ADDRESS_START} ${UICR_DEVICE_TYPE_ADDRESS_END} -CONSTant_Little_Endian ${YOTTA_CFG_UICR_DEVICE_TYPE} 4 -generate ${UICR_DEVICE_VERSION_ADDRESS_START} ${UICR_DEVICE_VERSION_ADDRESS_END} -CONSTant_Little_Endian ${YOTTA_CFG_UICR_DEVICE_VERSION} 4 -generate 0x7F000 0x7F004 -CONSTant_Little_Endian 0x01 4 -generate 0x7F004 0x7F008 -CONSTant_Little_Endian 0x00 4 -generate 0x7F008 0x7F00C -CONSTant_Little_Endian 0xFE 4 -generate 0x7F00C 0x7F020 -constant 0x00)
+set(SREC_FLAGS "")
+
+# uicr device type
+set(SREC_FLAGS ${SREC_FLAGS} -generate ${UICR_DEVICE_TYPE_ADDRESS_START} ${UICR_DEVICE_TYPE_ADDRESS_END} -CONSTant_Little_Endian ${YOTTA_CFG_UICR_DEVICE_TYPE} 4)
+
+# uice device version
+set(SREC_FLAGS ${SREC_FLAGS} -generate ${UICR_DEVICE_VERSION_ADDRESS_START} ${UICR_DEVICE_VERSION_ADDRESS_END} -CONSTant_Little_Endian ${YOTTA_CFG_UICR_DEVICE_VERSION} 4)
+
+# bootloader
+set(SREC_FLAGS ${SREC_FLAGS} -exclude 0x7F000 0x7F020 -generate 0x7F000 0x7F004 -CONSTant_Little_Endian 0x01 4 -generate 0x7F004 0x7F008 -CONSTant_Little_Endian 0x00 4 -generate 0x7F008 0x7F00C -CONSTant_Little_Endian 0xFE 4 -generate 0x7F00C 0x7F020 -constant 0x00)
 
 # define a function for yotta to apply target-specific rules to build products,
 # in our case we need to convert the built elf file to .hex, and add the
