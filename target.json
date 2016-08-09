@@ -1,6 +1,6 @@
 {
   "name": "nordic-nrf51822-gcc-unofficial-fota-custom",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "custom",
   "homepage": "https://github.com/jacobrosenthal/nordic-nrf51822-gcc",
   "repository": {
