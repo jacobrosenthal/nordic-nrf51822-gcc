@@ -1,6 +1,6 @@
 {
   "name": "nordic-nrf51822-gcc-unofficial-fota",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "UNOfficial mbed build target for the mbed nrf51822 development board, using the armgcc toolchain. Nordic globs multiple targets in a repo which means you can't target and override them. This fork adds FOTA .dat and .zip generation for OTA DFU. Requires srecord(srec_cat) to be installed.",
   "homepage": "https://github.com/jacobrosenthal/nordic-nrf51822-gcc",
   "repository": {
